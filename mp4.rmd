@@ -2,8 +2,9 @@
 title: "mp4"
 author: "Vivian Wang, Maggie Wang"
 date: "December 2, 2017"
-output: html_document:
-  code_folding: hide
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -52,30 +53,8 @@ ratelength <- db %>%
 avg_length <- ratelength %>% 
   group_by(Year) %>% 
   summarize(Length = mean(Length))
-```
 
-```{r}
 avg_length %>% ggplot(aes(x = Year, y = Length)) + 
-  geom_bar(stat = "identity")
-```
-
-```{r}
-avg_length_highrate <- ratelength %>% 
-  filter(Rating >= 8.0) %>% 
-  group_by(Year) %>% 
-  summarize(Length = mean(Length))
-
-avg_length_highrate %>% ggplot(aes(x = Year, y = Length)) + 
-  geom_bar(stat = "identity")
-```
-
-```{r}
-avg_length_pop <- ratelength %>% 
-  filter(Votes >= 100000) %>% 
-  group_by(Year) %>% 
-  summarize(Length = mean(Length))
-
-avg_length_pop %>% ggplot(aes(x = Year, y = Length)) + 
   geom_bar(stat = "identity")
 ```
 
@@ -83,14 +62,21 @@ avg_length_pop %>% ggplot(aes(x = Year, y = Length)) +
 avg_rating_length <- ratelength %>% 
   mutate(Length = cut(ratelength$Length, 
                       breaks = c(-Inf, 90, 120, 150, 180, 210, Inf), 
-                      labels = c("1h-1h29m", "1h30m-1h59m", "2h-2h29m", "2h30m-2h59m", "3h-3h29m", "3h30m+"),
+                      labels = c("1h", "1.5h", "2h", "2.5h", "3h", "3.5h+"),
                       include.lowest = TRUE)) %>% 
   group_by(Length) %>% 
   summarize(num = n(), Rating = mean(Rating))
   
 avg_rating_length %>%
   ggplot(aes(x = Length, y = Rating)) + 
-  geom_point(aes(size = num), fill = "royalblue4", 
-             shape = )
+  geom_point(aes(size = num), shape = 18, 
+             color = "royalblue4") + 
+  geom_label(aes(label = num), nudge_y = .4) + 
+  theme_wsj() + 
+  scale_size(range = c(1,16)) + 
+  theme(legend.position = "none") + 
+  theme(axis.title = element_text(size = 15)) +
+  scale_y_continuous(name = "Average Rating", 
+                     limits = c(5.5, 8.3))
 ```
 
