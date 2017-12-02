@@ -1,0 +1,96 @@
+---
+title: "mp4"
+author: "Vivian Wang, Maggie Wang"
+date: "December 2, 2017"
+output: html_document:
+  code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(mdsr)
+library(RMySQL)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+db <- dbConnect_scidb(dbname = "imdb")
+```
+
+```{r}
+ratelength_sql <- "
+SELECT t.id, t.title, 
+	t.production_year AS Year, 
+  mii.info AS Rating,
+  mi.info AS Length, 
+  mii2.info AS Votes
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+JOIN movie_info mi ON mi.movie_id = t.id
+JOIN movie_info_idx mii2 ON mii2.movie_id = t.id
+JOIN movie_info mi2 ON mi2.movie_id = t.id
+JOIN movie_info mi3 ON mi3.movie_id = t.id
+WHERE t.kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 1
+AND mi.info > 59
+AND mii2.info_type_id = 100
+AND mii2.info > 1000
+AND mi2.info_type_id = 3
+AND mi2.info NOT LIKE '%Adult%'
+AND mi3.info_type_id = 8
+AND mi3.info LIKE '%USA%'
+GROUP BY t.id;
+"
+ratelength <- db %>% 
+  dbGetQuery(ratelength_sql) %>% 
+  mutate(Length = as.integer(Length)) %>% 
+  mutate(Rating = as.numeric (Rating)) %>% 
+  mutate(Votes = as.integer(Votes))
+```
+
+```{r}
+avg_length <- ratelength %>% 
+  group_by(Year) %>% 
+  summarize(Length = mean(Length))
+```
+
+```{r}
+avg_length %>% ggplot(aes(x = Year, y = Length)) + 
+  geom_bar(stat = "identity")
+```
+
+```{r}
+avg_length_highrate <- ratelength %>% 
+  filter(Rating >= 8.0) %>% 
+  group_by(Year) %>% 
+  summarize(Length = mean(Length))
+
+avg_length_highrate %>% ggplot(aes(x = Year, y = Length)) + 
+  geom_bar(stat = "identity")
+```
+
+```{r}
+avg_length_pop <- ratelength %>% 
+  filter(Votes >= 100000) %>% 
+  group_by(Year) %>% 
+  summarize(Length = mean(Length))
+
+avg_length_pop %>% ggplot(aes(x = Year, y = Length)) + 
+  geom_bar(stat = "identity")
+```
+
+```{r}
+avg_rating_length <- ratelength %>% 
+  mutate(Length = cut(ratelength$Length, 
+                      breaks = c(-Inf, 90, 120, 150, 180, 210, Inf), 
+                      labels = c("1h-1h29m", "1h30m-1h59m", "2h-2h29m", "2h30m-2h59m", "3h-3h29m", "3h30m+"),
+                      include.lowest = TRUE)) %>% 
+  group_by(Length) %>% 
+  summarize(num = n(), Rating = mean(Rating))
+  
+avg_rating_length %>%
+  ggplot(aes(x = Length, y = Rating)) + 
+  geom_point(aes(size = num), fill = "royalblue4", 
+             shape = )
+```
+
