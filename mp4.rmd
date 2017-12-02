@@ -49,13 +49,21 @@ ratelength <- db %>%
   mutate(Votes = as.integer(Votes))
 ```
 
-```{r}
+```{r warning=FALSE}
 avg_length <- ratelength %>% 
   group_by(Year) %>% 
   summarize(Length = mean(Length))
 
 avg_length %>% ggplot(aes(x = Year, y = Length)) + 
-  geom_bar(stat = "identity")
+  geom_point(shape = 18, color = "royalblue4") + 
+  geom_line(color = "royalblue4") + 
+  theme_wsj() + 
+  theme(axis.title = element_text(size = 15)) + 
+  scale_x_continuous(limits = c(1920, 2017),
+                     breaks = c(1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010)) + 
+  scale_y_continuous(limits = c(60,150), 
+                     breaks = c(60, 90, 120, 150),
+                     labels = c("1h", "1.5h", "2h", "2.5h"))
 ```
 
 ```{r}
@@ -71,12 +79,11 @@ avg_rating_length %>%
   ggplot(aes(x = Length, y = Rating)) + 
   geom_point(aes(size = num), shape = 18, 
              color = "royalblue4") + 
-  geom_label(aes(label = num), nudge_y = .4) + 
+  geom_label(aes(label = num), nudge_y = .5) + 
   theme_wsj() + 
-  scale_size(range = c(1,16)) + 
+  scale_size(range = c(1,30)) + 
   theme(legend.position = "none") + 
   theme(axis.title = element_text(size = 15)) +
   scale_y_continuous(name = "Average Rating", 
-                     limits = c(5.5, 8.3))
+                     limits = c(5.5, 8.35))
 ```
-
