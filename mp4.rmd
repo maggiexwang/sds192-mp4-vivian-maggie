@@ -61,7 +61,7 @@ avg_length %>% ggplot(aes(x = Year, y = Length)) +
   theme(axis.title = element_text(size = 15)) + 
   scale_x_continuous(limits = c(1920, 2017),
                      breaks = c(1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010)) + 
-  scale_y_continuous(limits = c(60,150), 
+  scale_y_continuous(name = "Movie Length", limits = c(60,150), 
                      breaks = c(60, 90, 120, 150),
                      labels = c("1h", "1.5h", "2h", "2.5h"))
 ```
