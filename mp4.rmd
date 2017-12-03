@@ -23,13 +23,15 @@ SELECT t.id, t.title,
 	t.production_year AS Year, 
   mii.info AS Rating,
   mi.info AS Length, 
-  mii2.info AS Votes
+  mii2.info AS Votes,
+  mi4.info AS Genre
 FROM title t
 JOIN movie_info_idx mii ON mii.movie_id = t.id
 JOIN movie_info mi ON mi.movie_id = t.id
 JOIN movie_info_idx mii2 ON mii2.movie_id = t.id
 JOIN movie_info mi2 ON mi2.movie_id = t.id
 JOIN movie_info mi3 ON mi3.movie_id = t.id
+JOIN movie_info mi4 ON mi4.movie_id = t.id
 WHERE t.kind_id = 1
 AND mii.info_type_id = 101
 AND mi.info_type_id = 1
@@ -40,13 +42,15 @@ AND mi2.info_type_id = 3
 AND mi2.info NOT LIKE '%Adult%'
 AND mi3.info_type_id = 8
 AND mi3.info LIKE '%USA%'
+AND mi4.info_type_id = 3
 GROUP BY t.id;
 "
 ratelength <- db %>% 
   dbGetQuery(ratelength_sql) %>% 
   mutate(Length = as.integer(Length)) %>% 
   mutate(Rating = as.numeric (Rating)) %>% 
-  mutate(Votes = as.integer(Votes))
+  mutate(Votes = as.integer(Votes)) %>% 
+  mutate(Genre = as.factor(Genre))
 ```
 
 ```{r warning=FALSE}
@@ -66,7 +70,7 @@ avg_length %>% ggplot(aes(x = Year, y = Length)) +
                      labels = c("1h", "1.5h", "2h", "2.5h"))
 ```
 
-```{r}
+```{r message=FALSE}
 avg_rating_length <- ratelength %>% 
   mutate(Length = cut(ratelength$Length, 
                       breaks = c(-Inf, 90, 120, 150, 180, 210, Inf), 
@@ -84,6 +88,28 @@ avg_rating_length %>%
   scale_size(range = c(1,30)) + 
   theme(legend.position = "none") + 
   theme(axis.title = element_text(size = 15)) +
+  scale_x_discrete(name = "Movie Length") +
   scale_y_continuous(name = "Average Rating", 
                      limits = c(5.5, 8.35))
 ```
+
+```{r}
+genre_long <- ratelength %>% 
+  filter(Length >= 180)
+
+genre_long_num <- genre_long %>% 
+  group_by(Genre) %>% 
+  summarize(num = n())
+
+genre_long_num %>% 
+  ggplot(aes(x = reorder(Genre,-num), y = num)) + 
+  geom_bar(stat = "identity", 
+           fill = "royalblue4", width = .5) + 
+  theme_wsj() + 
+  scale_x_discrete(name = "Genre") + 
+  scale_y_continuous(name = "Number of Long Films", 
+                     limits = c(0, 25)) + 
+  theme(axis.title = element_text(size = 15), 
+        axis.text = element_text(size = 10))
+```
+
