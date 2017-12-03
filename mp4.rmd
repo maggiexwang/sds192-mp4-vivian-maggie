@@ -1,7 +1,7 @@
 ---
-title: "mp4"
+title: "4-Hour Movie? Frankly, My Dear, I Don’t Give A Damn."
 author: "Vivian Wang, Maggie Wang"
-date: "December 2, 2017"
+date: "December 3, 2017"
 output: 
   html_document:
     code_folding: hide
@@ -18,6 +18,9 @@ db <- dbConnect_scidb(dbname = "imdb")
 ```
 
 ```{r}
+# Pull information all at once from server via sql query
+# Limited to films more than 60mins long, produced in the US, and not adult
+
 ratelength_sql <- "
 SELECT t.id, t.title, 
 	t.production_year AS Year, 
@@ -45,6 +48,7 @@ AND mi3.info LIKE '%USA%'
 AND mi4.info_type_id = 3
 GROUP BY t.id;
 "
+
 ratelength <- db %>% 
   dbGetQuery(ratelength_sql) %>% 
   mutate(Length = as.integer(Length)) %>% 
@@ -54,10 +58,12 @@ ratelength <- db %>%
 ```
 
 ```{r warning=FALSE}
+# Find average film length over the years
 avg_length <- ratelength %>% 
   group_by(Year) %>% 
   summarize(Length = mean(Length))
 
+# Plot average length against year of film release
 avg_length %>% ggplot(aes(x = Year, y = Length)) + 
   geom_point(shape = 18, color = "royalblue4") + 
   geom_line(color = "royalblue4") + 
@@ -70,7 +76,8 @@ avg_length %>% ggplot(aes(x = Year, y = Length)) +
                      labels = c("1h", "1.5h", "2h", "2.5h"))
 ```
 
-```{r message=FALSE}
+```{r}
+# Bin film length, find count and average rating
 avg_rating_length <- ratelength %>% 
   mutate(Length = cut(ratelength$Length, 
                       breaks = c(-Inf, 90, 120, 150, 180, 210, Inf), 
@@ -79,6 +86,8 @@ avg_rating_length <- ratelength %>%
   group_by(Length) %>% 
   summarize(num = n(), Rating = mean(Rating))
   
+# Plot rating against length
+# Size of diamond indicate number of films in the bin
 avg_rating_length %>%
   ggplot(aes(x = Length, y = Rating)) + 
   geom_point(aes(size = num), shape = 18, 
@@ -94,13 +103,16 @@ avg_rating_length %>%
 ```
 
 ```{r}
+# Find information about films longer than 3h
 genre_long <- ratelength %>% 
   filter(Length >= 180)
 
+# Count number of long films according to genre
 genre_long_num <- genre_long %>% 
   group_by(Genre) %>% 
   summarize(num = n())
 
+# Plot in bar graph
 genre_long_num %>% 
   ggplot(aes(x = reorder(Genre,-num), y = num)) + 
   geom_bar(stat = "identity", 
