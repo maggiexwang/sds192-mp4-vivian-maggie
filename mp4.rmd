@@ -1,11 +1,13 @@
 ---
-title: "4-Hour Movie? Frankly, My Dear, I Don't Give A Damn."
+title: "4-Hour Movie? <br> Frankly, My Dear, I Don't Give A Damn."
 author: "Vivian Wang, Maggie Wang"
 date: "December 3, 2017"
 output:
   html_document:
     code_folding: hide
-  pdf_document: default
+    theme: simplex
+    fig_width: 10
+    fig_caption: true
 ---
 
 ```{r setup, include=FALSE, message=FALSE}
@@ -66,7 +68,7 @@ ratelength <- db %>%
   mutate(Genre = as.factor(Genre))
 ```
 
-```{r warning=FALSE}
+```{r warning=FALSE, fig.align="center"}
 # Find average film length over the years
 avg_length <- ratelength %>% 
   group_by(Year) %>% 
@@ -96,7 +98,7 @@ Apart from the ongoing Generation X v. Millennials showdown, the period from 193
 
 Then why are we, hard-to-please audiences, whining about long movies? Recall the last time you sat through a 3 hour movie - did you walk out of the theater complaining about how bad you had to pee, or about how tedious the film was? Data shows that your last hour of suffering is most likely worth it - longer films are actually rated higher.  
 
-```{r}
+```{r fig.align="center"}
 # Bin film length, find count and average rating
 avg_rating_length <- ratelength %>% 
   mutate(Length = cut(ratelength$Length, 
@@ -128,7 +130,7 @@ Graphic 2 above shows how the average ratings of movies change as their lengths 
 
 Now, there are many possible explanations to this phenomenon. From a production point of view, it could be that if a director can sell a longer-than-average movie to his producers and studios, the movie is probably fairly good. It could be that stories of certain kind require more time to tell: those that include more details, fictional worlds, better-crafted characters, or other elements that make stories more convincing, and thus make the films more enjoyable. The group of 60 films longer than 3 hours seem to confirm this intuition:  
 
-```{r}
+```{r fig.align="center"}
 # Find information about films longer than 3h
 genre_long <- ratelength %>% 
   filter(Length >= 180) 
@@ -161,7 +163,7 @@ Graph 3 above shows that among the insanely long movies, more of them are dramas
 
 At these lengths, movies are endurance tests for how long we can remain seated in close proximity to complete strangers while having 8 megapixels of light flashing in our faces. A person who simply cannot stand longer movies might therefore argue: look, only the people who are already invested enough in the specific topic or characters of that 3 hour long film are going to sit through it, of course they are going to rate it higher. Yet based on how many times the 10 highest-rated long films were rated on IMDb (Votes), long films are not necessarily niche - you must recognize some of these big names in the table below:  
 
-```{r}
+```{r fig.align="center"}
 # Show information of 10 highest-rated long films
 genre_long_10 %>% 
   arrange(desc(Rating), desc(Votes)) %>% 
