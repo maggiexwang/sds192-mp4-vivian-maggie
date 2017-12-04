@@ -7,15 +7,23 @@ output:
     code_folding: hide
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(mdsr)
 library(RMySQL)
 library(dplyr)
 library(ggplot2)
 library(ggthemes)
+library(grid)
+library(gridExtra)
 db <- dbConnect_scidb(dbname = "imdb")
 ```
+
+It is December 15, 1939 and Loew’s Grand Theatre is shining as center stage for the premiere of American classic, Gone With The Wind. Over the next few months, Scarlett and her beloved Rhett will go on to sweep audiences off their feet, shatter attendance records nationwide, and garner reverent reviews from magazines and newspapers alike. Amongst the glowing praise, however, are a few grumbles. Some reviewers felt the film was unnecessarily dragged out with repetitious scenes and mundane dialogue upping the minute count. Their claims were not unfounded: Gone With The Wind clocked in with a staggering 4-hour runtime which made it the longest American film of its day.  
+
+Flash forward to the present, Gone With The Wind continues to hold a place amongst the top 20 longest American movies ever made. Simultaneously, extended film lengths are again evoking similar ire amongst millennial moviegoers who complain that movies are becoming longer than they used to be. But, have they really gotten longer since the days of black-and-white? Complaining millennials aside, do the rest of us really hate the extra film time?
+
+As they battle for profits with entertainment competitors such as Netflix and YouTube, production studios and other movie industry players have high stakes in understanding audience preferences. Luckily, with the advent of the Internet, we now have the means to address these questions with the runtimes and ratings within the International Movie Database (IMDb). The data reveals not only film length patterns that reflect the history of entertainment technology, but also that we take a page from Rhett when it comes to enjoying long movies: frankly, we don’t give a damn.
 
 ```{r}
 # Pull information all at once from server via sql query
@@ -105,7 +113,9 @@ avg_rating_length %>%
 ```{r}
 # Find information about films longer than 3h
 genre_long <- ratelength %>% 
-  filter(Length >= 180)
+  filter(Length >= 180) %>% 
+  select(-id, -Votes) %>%  
+  rename('Film'='title')
 
 # Count number of long films according to genre
 genre_long_num <- genre_long %>% 
@@ -123,5 +133,13 @@ genre_long_num %>%
                      limits = c(0, 25)) + 
   theme(axis.title = element_text(size = 15), 
         axis.text = element_text(size = 10))
+```
+
+```{r}
+# Show information of 10 highest-rated long films
+genre_long %>% 
+  arrange(desc(Rating)) %>% 
+  head(10) %>% 
+  grid.table()
 ```
 
