@@ -19,6 +19,7 @@ library(ggplot2)
 library(ggthemes)
 library(grid)
 library(gridExtra)
+library(humaniformat)
 db <- dbConnect_scidb(dbname = "imdb")
 ```
 
@@ -38,14 +39,15 @@ SELECT t.id, t.title,
   mii.info AS Rating,
   mi.info AS Length, 
   mii2.info AS Votes,
-  mi4.info AS Genre
+  n.name AS Director
 FROM title t
 JOIN movie_info_idx mii ON mii.movie_id = t.id
 JOIN movie_info mi ON mi.movie_id = t.id
 JOIN movie_info_idx mii2 ON mii2.movie_id = t.id
 JOIN movie_info mi2 ON mi2.movie_id = t.id
 JOIN movie_info mi3 ON mi3.movie_id = t.id
-JOIN movie_info mi4 ON mi4.movie_id = t.id
+JOIN cast_info ci ON ci.movie_id = t.id
+JOIN name n ON n.id = ci.person_id
 WHERE t.kind_id = 1
 AND mii.info_type_id = 101
 AND mi.info_type_id = 1
@@ -56,7 +58,7 @@ AND mi2.info_type_id = 3
 AND mi2.info NOT LIKE '%Adult%'
 AND mi3.info_type_id = 8
 AND mi3.info LIKE '%USA%'
-AND mi4.info_type_id = 3
+AND ci.role_id = 8
 GROUP BY t.id;
 "
 
@@ -64,8 +66,7 @@ ratelength <- db %>%
   dbGetQuery(ratelength_sql) %>% 
   mutate(Length = as.integer(Length)) %>% 
   mutate(Rating = as.numeric (Rating)) %>% 
-  mutate(Votes = as.integer(Votes)) %>% 
-  mutate(Genre = as.factor(Genre))
+  mutate(Votes = as.integer(Votes))
 ```
 
 ```{r warning=FALSE, fig.align="center"}
@@ -128,44 +129,44 @@ Graphic 2. Long movies and their ratings.
 
 Graphic 2 above shows how the average ratings of movies change as their lengths increase, with the size of the diamonds indicating how many films are of that binned length. For example, there are 1421 movies that are longer than 2 hours but shorter than 2 hours 30 minutes, and their average rating is around 7.0. Most movies run for 90-120 minutes, and have a mediocre average rating around 6.4. So, some takeaway for aspiring young filmmakers: consider the long-run, literally.  
 
-Now, there are many possible explanations to this phenomenon. From a production point of view, it could be that if a director can sell a longer-than-average movie to his producers and studios, the movie is probably fairly good. It could be that stories of certain kind require more time to tell: those that include more details, fictional worlds, better-crafted characters, or other elements that make stories more convincing, and thus make the films more enjoyable. The group of 60 films longer than 3 hours seem to confirm this intuition:  
+Now, there are many possible explanations to this phenomenon. From a production point of view, it could be that if a director can sell a longer-than-average movie to his producers and studios, the movie is probably fairly good. It could be that stories of certain kind require more time to tell: those that include more details, fictional worlds, better-crafted characters, or other elements that make stories more convincing, and thus make the films more enjoyable. 
+
+```{r warning=FALSE}
+# Big directors and film length
+bignames <- ratelength %>% 
+  select(-id, -Rating) %>% 
+  filter(Director %in% 
+           c('Scorsese, Martin','Tarantino, Quentin')) %>% 
+  filter(Votes > 5000) %>% 
+  mutate(Director = format_reverse(Director))
+
+avg_length %>% ggplot(aes(x = Year, y = Length)) +
+  geom_area(stat = "identity", alpha = 0.2) + 
+  theme_wsj() + 
+  theme(axis.title = element_text(size = 15), 
+        legend.title = element_blank()) + 
+  scale_x_continuous(name = "Year", limits = c(1970, 2017)) +  
+  scale_y_continuous(name = "Movie Length", 
+                     breaks = c(-Inf, 60, 120, 180, Inf), 
+                     labels = c('1h-', '1h', '2h', '3h', '3h+')) +
+  coord_cartesian(ylim = c(60, 180)) + 
+  geom_point(data = bignames, aes(color = bignames$Director), shape = 18, size = 2.5) + 
+  geom_line(data = bignames, aes(color = bignames$Director), size = 1.2) + 
+  scale_color_manual(values = c("RoyalBlue4", "darkred"))
+```
+
+
+At these lengths, movies are endurance tests for how long we can remain seated in close proximity to complete strangers while having 8 megapixels of light flashing in our faces. A person who simply cannot stand longer movies might therefore argue: look, only the people who are already invested enough in the specific topic or characters of that 3 hour long film are going to sit through it, of course they are going to rate it higher. Yet based on how many times the 10 highest-rated long films were rated on IMDb (Votes), long films are not necessarily niche - you must recognize some of these big names in the table below:  
 
 ```{r fig.align="center"}
 # Find information about films longer than 3h
 genre_long <- ratelength %>% 
   filter(Length >= 180) 
 
-genre_long_10 <- genre_long %>% 
-  select(-id, -Genre) %>%  
-  rename('Film'='title')
-
-# Count number of long films according to genre
-genre_long_num <- genre_long %>% 
-  group_by(Genre) %>% 
-  summarize(num = n())
-
-# Plot in bar graph
-genre_long_num %>% 
-  ggplot(aes(x = reorder(Genre,-num), y = num)) + 
-  geom_bar(stat = "identity", 
-           fill = "royalblue4", width = .5) + 
-  theme_wsj() + 
-  scale_x_discrete(name = "Genre") + 
-  scale_y_continuous(name = "Number of Long Films", 
-                     limits = c(0, 25)) + 
-  theme(axis.title = element_text(size = 15), 
-        axis.text = element_text(size = 10))
-```
-
-Graph 3. Genres of the long films.    
-
-Graph 3 above shows that among the insanely long movies, more of them are dramas, biographies, or adventures. This probably match your viewing experience as an audience: dramas adapted from novels or drawn from epic wars, like *Gone with the Wind* and *Gettysburg*, do require a fair amount of time to get through, while a biography compressing someone’s life story would be understandably long. For adventures, the *Lord of the Rings* series speaks for itself: *The Return of the King*, the last film of the original 3-film series, runs for a jaw-dropping length of 263 minutes and scores 8.9 on IMDb.  
-
-At these lengths, movies are endurance tests for how long we can remain seated in close proximity to complete strangers while having 8 megapixels of light flashing in our faces. A person who simply cannot stand longer movies might therefore argue: look, only the people who are already invested enough in the specific topic or characters of that 3 hour long film are going to sit through it, of course they are going to rate it higher. Yet based on how many times the 10 highest-rated long films were rated on IMDb (Votes), long films are not necessarily niche - you must recognize some of these big names in the table below:  
-
-```{r fig.align="center"}
 # Show information of 10 highest-rated long films
-genre_long_10 %>% 
+genre_long %>% 
+  select(-id) %>% 
+  rename('Film' = 'title') %>% 
   arrange(desc(Rating), desc(Votes)) %>% 
   head(10) %>% 
   grid.table()
