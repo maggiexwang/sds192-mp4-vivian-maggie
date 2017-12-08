@@ -98,7 +98,7 @@ avg_length %>% ggplot(aes(x = Year, y = Length)) +
                      breaks = c(60, 90, 120, 150),
                      labels = c("1h", "1.5h", "2h", "2.5h")) + 
   labs(title = "Movies Aren't Much Longer Than Before", 
-       subtitle = "In fact, the average length of Hollywood films remains about the same since the 90s.")
+       subtitle = "In fact, the average length of Hollywood films has remained about the same since the 80s.")
 ```
 
 The first task of the day is demystifying the accusations around increasing movie length here in the U.S. In graphic above, the length of all the movies released in each year are averaged out and displayed against a time scale running from the old glamour of the 1920s to modern Hollywood productions. Besides the sharp uptick around 1925 when the Golden Age of Hollywood popularized long feature films, average film length seems to have generally remained between 1.5 and 2 hours throughout the years. In other words, movie lengths haven’t been significantly extended over the decades.   
@@ -115,7 +115,7 @@ Then why are we, hard-to-please audiences, whining about long movies? Recall the
 avg_rating_length <- ratelength %>% 
   mutate(Length = cut(ratelength$Length, 
                       breaks = c(-Inf, 90, 120, 150, 180, 210, Inf), 
-                      labels = c("1h", "1.5h", "2h", "2.5h", "3h", "3.5h+"),
+                      labels = c("1h+", "1.5h+", "2h+", "2.5h+", "3h+", "3.5h+"),
                       include.lowest = TRUE)) %>% 
   group_by(Length) %>% 
   summarize(num = n(), Rating = mean(Rating))
@@ -185,10 +185,10 @@ At these lengths, movies are endurance tests for how long we can remain seated i
 genre_long <- ratelength %>% 
   filter(Length >= 180) 
 
-# Show information of long films, sorted by 
+# Show information of long films, sorted by rating
 genre_long %>% 
   select(Rating, title, Year, Length, Votes, Director) %>% 
-  filter(Votes >= 5000) %>% 
+  filter(title != "Kill Bill: The Whole Bloody Affair") %>% 
   rename('Film' = 'title') %>% 
   arrange(desc(Rating), desc(Votes)) %>% 
   kable(format = "html", align = 'c',
