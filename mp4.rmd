@@ -73,6 +73,9 @@ ratelength <- db %>%
   mutate(Rating = as.numeric (Rating)) %>% 
   mutate(Votes = as.integer(Votes)) %>% 
   mutate(Director = format_reverse(Director))
+
+# Manually correct The Hateful Eight data
+ratelength$Length[ratelength$title == "The Hateful Eight"] <- as.integer(187)
 ```
 
 ```{r warning=FALSE, fig.align="center"}
@@ -164,7 +167,7 @@ bignames_plot <- avg_length %>%
   scale_y_continuous(name = "Movie Length", 
                      breaks = c(-Inf, 60, 120, 180, Inf), 
                      labels = c('1h-', '1h', '2h', '3h', '3h+')) +
-  coord_cartesian(ylim = c(60, 180)) + 
+  coord_cartesian(ylim = c(60, 200)) + 
   geom_point(data = bignames, aes(color = bignames$Director), shape = 18, size = 2.5) + 
   geom_line(data = bignames, aes(color = bignames$Director), size = 1.2) + 
   scale_color_manual(values = c("RoyalBlue4", "darkred")) + 
