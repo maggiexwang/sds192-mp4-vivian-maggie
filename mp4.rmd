@@ -5,7 +5,6 @@ date: "December 3, 2017"
 output:
   html_document:
     code_folding: hide
-    theme: simplex
     fig_width: 10
     fig_caption: true
 ---
