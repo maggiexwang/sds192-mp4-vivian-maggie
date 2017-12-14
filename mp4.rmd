@@ -180,7 +180,7 @@ bignames_plot
 ```
 
   
-Alternatively, it could also be argued that only people who are already invested enough in the specific topic of a 3-hour long film are going to sit through it, and of course will rate it higher. Yet from the table below we can see that while some highly-rated long films are clearly niche, such as the adaptation of Tolstoy’s [*War and Peace*](http://www.imdb.com/title/tt0049934/) or the detailed [*The Rise and Fall of Jack Johnson*](http://www.imdb.com/title/tt0413615/), many of these movies receive large amounts of reviews, and are big names that we probably recognize from the "Must See" lists.
+Alternatively, it could also be argued that only people who are already invested enough in the specific topic of a 3-hour long film are going to sit through it, and of course will rate it higher. This could be true: from the table below we can see that some highly-rated long films are clearly niche, such as the adaptation of Tolstoy’s [*War and Peace*](http://www.imdb.com/title/tt0049934/) or the detailed biography [*The Rise and Fall of Jack Johnson*](http://www.imdb.com/title/tt0413615/). Yet at the same time, we should notice that many of these movies receive large amounts of reviews, and are big names that frequent the "Must See" lists.
 
 ```{r fig.align="center"}
 # Find information about films longer than 3h
