@@ -140,7 +140,7 @@ avg_rating_length %>%
        subtitle = "The fewer longer movies are receiving higher ratings.")
 ```
 
-Graphic 2 shows how average ratings of movies change as lengths increase, with diamond size indicating how many films are of that length. For example, there are 1421 movies that are between 2 and 2.5 hours; their average rating is around 7.0. Most movies run for 1.5 to 2 hours, and have a mediocre average rating around 6.4. So, takeaway for aspiring filmmakers: consider the long-run, literally.  
+This second graph above shows how average ratings of movies change as lengths increase, with diamond size indicating how many films are of that length. For example, there are 1421 movies that are between 2 and 2.5 hours; their average rating is around 7.0. Most movies run for 1.5 to 2 hours, and have a mediocre average rating around 6.4. So, takeaway for aspiring filmmakers: consider the long-run, literally.  
 
 One possible explanation for this phenomenon stems from directors and their reputations for producing standout films. When a new director hits the scene, they have little credibility. Business-savvy production studios and investors are unlikely to trust newbies who haven’t proven their commercial appeal with extensive budgets. Without backing, longer movies are financially unattainable. Pulling in profits wins directors higher budgets, expansive resources, and creative freedom to produce longer movies. Whether those dollars are brought in by visionary talent or ability to capitalize on shock value, their presence indicates audience approval and higher ratings. Longer movies land higher ratings because only directors who have shown that they can attract audiences are trusted to produce them.   
 
@@ -180,7 +180,7 @@ bignames_plot
 ```
 
   
-Alternatively, it could also be argued that only people who are already invested enough in the specific topic of a 3-hour long film are going to sit through it, of course they’re going to rate it higher. While there are big names in the table of highest-rated 3+ hour films below, it’s safe to say that not everyone is jumping to sit through an adaptation of Tolstoy’s [*War and Peace*](http://www.imdb.com/title/tt0049934/) or a detailed biopic like [*Gandhi*](http://www.imdb.com/title/tt0083987/?ref_=fn_al_tt_1). Films like these are to some extent niche in their appeal; if you sat through it in the first place, you either had some commitment to the content or you straight up fell asleep. No judgment either way.  
+Alternatively, it could also be argued that only people who are already invested enough in the specific topic of a 3-hour long film are going to sit through it, and of course will rate it higher. Yet from the table below we can see that while some highly-rated long films are clearly niche, such as the adaptation of Tolstoy’s [*War and Peace*](http://www.imdb.com/title/tt0049934/) or the detailed [*The Rise and Fall of Jack Johnson*](http://www.imdb.com/title/tt0413615/), many of these movies receive large amounts of reviews, and are big names that we probably recognize from the "Must See" lists.
 
 ```{r fig.align="center"}
 # Find information about films longer than 3h
@@ -201,6 +201,5 @@ genre_long %>%
   
 So, long story short: Even if that next *Star Wars* franchise is 4 hours long, we’ll still be happily glued to our seats and devotedly chanting “May the Force Be With You” all the way through.  
 
----
 
 [^1]: For more information about our study, please refer to our [GitHub repository](https://github.com/wxiaonanw/sds192-mp4-vivian-maggie).
