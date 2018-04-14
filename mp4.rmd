@@ -2,10 +2,11 @@
 title: "4-Hour Movie? <br> Frankly, My Dear, I Don't Give A Damn."
 author: "Vivian Wang, Maggie Wang"
 output:
+  pdf_document: default
   html_document:
     code_folding: hide
+    fig_caption: yes
     fig_width: 10
-    fig_caption: true
 ---
 
 `r format(Sys.Date(), "%B %e, %Y")`
