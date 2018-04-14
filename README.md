@@ -12,6 +12,13 @@ The study shows that Hollywood films are not getting longer over time. However, 
 
 Our findings can be summarized in these three main graphs supporting the article. Please refer to the .Rmd file for more detailed write-out and analysis process.
 
+![movielength](https://github.com/wxiaonanw/sds192-mp4-vivian-maggie/blob/master/mp4-1.png)
+
+![ratinglength](https://github.com/wxiaonanw/sds192-mp4-vivian-maggie/blob/master/mp4-2.png)
+
+![ms-qt](https://github.com/wxiaonanw/sds192-mp4-vivian-maggie/blob/master/mp4-3.png)
+
+
 ## Notes about code
 
 * Data on Quentin Tarantino's *The Hateful Eight* was manually corrected.
